@@ -462,7 +462,7 @@ export default function App() {
           totalGiatAll={globalStats.all}
           totalGiatMPR={globalStats.mpr}
           totalGiatDPR={globalStats.dpr}
-          totalGiatEBY={globalStats.eby}
+          totalGiatEBY={ebyPrograms.length}
           totalAttendance={attendanceRecords.length}
           isOpenMobile={isSidebarMobileOpen}
           setIsOpenMobile={setIsSidebarMobileOpen}
