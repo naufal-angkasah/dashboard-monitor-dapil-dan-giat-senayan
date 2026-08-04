@@ -448,10 +448,12 @@ export default function App() {
           activeTab={activeTab}
           setActiveTab={(tab) => {
             setActiveTab(tab);
-            if (tab === 'senayan_all') setSenayanFilter(prev => ({ ...prev, kategoriGiat: 'ALL' }));
-            else if (tab === 'senayan_mpr') setSenayanFilter(prev => ({ ...prev, kategoriGiat: 'MPR' }));
-            else if (tab === 'senayan_dpr') setSenayanFilter(prev => ({ ...prev, kategoriGiat: 'DPR' }));
-            else if (tab === 'senayan_eby') setSenayanFilter(prev => ({ ...prev, kategoriGiat: 'EBY Connect' }));
+            setSenayanFilter(prev => ({ ...prev, searchQuery: '' }));
+            setDapilFilters(prev => ({ ...prev, searchQuery: '' }));
+            if (tab === 'senayan_all') setSenayanFilter(prev => ({ ...prev, kategoriGiat: 'ALL', searchQuery: '' }));
+            else if (tab === 'senayan_mpr') setSenayanFilter(prev => ({ ...prev, kategoriGiat: 'MPR', searchQuery: '' }));
+            else if (tab === 'senayan_dpr') setSenayanFilter(prev => ({ ...prev, kategoriGiat: 'DPR', searchQuery: '' }));
+            else if (tab === 'senayan_eby') setSenayanFilter(prev => ({ ...prev, kategoriGiat: 'EBY Connect', searchQuery: '' }));
           }}
           role={role}
           currentUser={currentUser}
