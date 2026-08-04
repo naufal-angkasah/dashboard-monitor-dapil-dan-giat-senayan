@@ -16,6 +16,8 @@ import {
 import { EbyConnectProgram } from '../types';
 import * as XLSX from 'xlsx';
 
+import { CustomTooltip } from './CustomTooltip';
+
 interface EbyConnectViewProps {
   programs: EbyConnectProgram[];
   onOpenDetailProgram?: (program: EbyConnectProgram) => void;
@@ -274,12 +276,18 @@ export const EbyConnectView: React.FC<EbyConnectViewProps> = ({
                     
                     {/* Sticky Column for Mobile */}
                     <td className="p-3 font-bold text-slate-900 border-r border-slate-200/60 sticky left-0 bg-white z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.08)]">
-                      <div>
-                        {program.namaProgram}
-                        <span className="block text-[11px] font-normal text-slate-500 mt-0.5">
-                          ID: {program.id} • {program.tanggal}
+                      <CustomTooltip
+                        content={program.namaProgram}
+                        category="EBY Connect"
+                        badge={program.jenisProgram}
+                      >
+                        <span className="hover:underline cursor-pointer hover:text-emerald-700">
+                          {program.namaProgram}
                         </span>
-                      </div>
+                      </CustomTooltip>
+                      <span className="block text-[11px] font-normal text-slate-500 mt-0.5">
+                        ID: {program.id} • {program.tanggal}
+                      </span>
                     </td>
 
                     <td className="p-3 font-semibold border-r border-slate-200/60">

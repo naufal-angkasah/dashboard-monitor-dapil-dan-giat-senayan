@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { ProgramItem, Role } from '../types';
 import { getStatusColor } from './MapVisualization';
+import { CustomTooltip } from './CustomTooltip';
 
 interface DetailTableProps {
   programs: ProgramItem[];
@@ -225,11 +226,15 @@ export const DetailTable: React.FC<DetailTableProps> = ({
                       {globalIndex}
                     </td>
                     <td className="p-3 border-r border-slate-100 font-bold text-slate-900">
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-heading text-sm group-hover:text-blue-600 transition-colors">
+                      <CustomTooltip
+                        content={p.namaProgram}
+                        category={p.komisi}
+                        badge={p.jenisProgram}
+                      >
+                        <span className="font-heading text-sm group-hover:text-blue-600 transition-colors cursor-pointer">
                           {p.namaProgram}
                         </span>
-                      </div>
+                      </CustomTooltip>
                       <div className="text-[10px] text-blue-600 font-semibold mt-0.5">
                         🏛️ {p.komisi}
                       </div>

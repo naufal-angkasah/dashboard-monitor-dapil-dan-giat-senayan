@@ -16,6 +16,7 @@ import {
   Filter
 } from 'lucide-react';
 import { ProgramItem, Role } from '../types';
+import { CustomTooltip } from './CustomTooltip';
 
 interface DaftarProgramViewProps {
   programs: ProgramItem[];
@@ -218,9 +219,15 @@ export const DaftarProgramView: React.FC<DaftarProgramViewProps> = ({
                   </span>
                 </div>
 
-                <h3 className="font-bold text-sm text-slate-900 leading-snug group-hover:text-blue-600 transition-colors line-clamp-2">
-                  {p.namaProgram}
-                </h3>
+                <CustomTooltip
+                  content={p.namaProgram}
+                  category={p.komisi}
+                  badge={p.jenisProgram}
+                >
+                  <h3 className="font-bold text-sm text-slate-900 leading-snug group-hover:text-blue-600 transition-colors line-clamp-2">
+                    {p.namaProgram}
+                  </h3>
+                </CustomTooltip>
                 
                 <p className="text-xs text-slate-500 mt-1 font-medium line-clamp-1">
                   Penerima: <strong className="text-slate-800">{p.namaPenerima}</strong>
