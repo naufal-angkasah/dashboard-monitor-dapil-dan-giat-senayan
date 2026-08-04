@@ -517,12 +517,11 @@ export default function App() {
                 activities={activities}
               />
               <ExecutiveSummaryCards stats={stats} activeCategoryTab={activeCategoryTab} />
-              <ChartsSection activities={filteredActivities} activeCategoryTab={activeCategoryTab} />
+              <ChartsSection filteredActivities={filteredActivities} activeCategoryTab={activeCategoryTab} />
               <DataTable
                 activities={filteredActivities}
                 onSelectActivity={(a) => setSelectedSenayanActivity(a)}
                 userRole={senayanUserRole}
-                onAddNewActivity={role === 'Admin' ? () => setIsFormInputGiatOpen(true) : undefined}
               />
             </>
           )}
