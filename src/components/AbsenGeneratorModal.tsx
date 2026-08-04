@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { 
   X, 
@@ -12,7 +12,8 @@ import {
   Building, 
   Users,
   Layers,
-  Share2
+  Share2,
+  Search
 } from 'lucide-react';
 import QRCode from 'qrcode';
 import { ActivityItem } from '../types';
@@ -22,7 +23,7 @@ interface AbsenGeneratorModalProps {
   onClose: () => void;
   activities: ActivityItem[];
   selectedActivityForAbsen?: ActivityItem | null;
-  onSelectActivityForAbsen: (activity: ActivityItem) => void;
+  onSelectActivityForAbsen?: (activity: ActivityItem) => void;
   onOpenPublicAbsen: (activityId: string) => void;
 }
 
@@ -38,15 +39,34 @@ export const AbsenGeneratorModal: React.FC<AbsenGeneratorModalProps> = ({
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
   const [customTitle, setCustomTitle] = useState('');
   const [selectedActivityId, setSelectedActivityId] = useState<string>('');
+  const [searchFilter, setSearchFilter] = useState('');
 
-  const currentActivity = selectedActivityForAbsen || activities.find(a => a.id === selectedActivityId) || activities[0];
+  const currentActivity = useMemo(() => {
+    if (selectedActivityId) {
+      const match = activities.find(a => a.id === selectedActivityId);
+      if (match) return match;
+    }
+    return selectedActivityForAbsen || activities[0];
+  }, [selectedActivityId, selectedActivityForAbsen, activities]);
 
   useEffect(() => {
-    if (currentActivity) {
+    if (currentActivity && !selectedActivityId) {
       setSelectedActivityId(currentActivity.id);
       setCustomTitle(currentActivity.namaGiat);
     }
   }, [currentActivity]);
+
+  const filteredActivitiesList = useMemo(() => {
+    if (!searchFilter.trim()) return activities;
+    const q = searchFilter.toLowerCase();
+    return activities.filter(a => 
+      a.id.toLowerCase().includes(q) ||
+      a.namaGiat.toLowerCase().includes(q) ||
+      a.asalInstansi?.toLowerCase().includes(q) ||
+      a.kabupaten?.toLowerCase().includes(q) ||
+      a.tanggal?.toLowerCase().includes(q)
+    );
+  }, [activities, searchFilter]);
 
   const baseUrl = window.location.origin + window.location.pathname;
   const absenUrl = `${baseUrl}?absen=${currentActivity?.id || 'G-2026-001'}`;
@@ -113,24 +133,60 @@ export const AbsenGeneratorModal: React.FC<AbsenGeneratorModalProps> = ({
         {/* Body Content */}
         <div className="p-5 space-y-5 max-h-[80vh] overflow-y-auto">
           
-          {/* Activity Select */}
-          <div>
-            <label className="block text-xs font-bold uppercase text-slate-800 mb-1 flex items-center gap-1">
-              <Layers className="w-4 h-4 text-blue-600" /> Pilih Kegiatan yang Ingin Di-generate Absen:
-            </label>
+          {/* Activity Search & Select */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="block text-xs font-bold uppercase text-slate-800 flex items-center gap-1">
+                <Layers className="w-4 h-4 text-blue-600" /> Pilih Kegiatan yang Ingin Di-generate Absen:
+              </label>
+              <span className="text-[11px] text-slate-500 font-medium">
+                ({filteredActivitiesList.length} dari {activities.length} kegiatan)
+              </span>
+            </div>
+
+            {/* Quick Search Input */}
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              <input
+                type="text"
+                value={searchFilter}
+                onChange={(e) => setSearchFilter(e.target.value)}
+                placeholder="Cari kegiatan (Ketik ID, Nama Giat, Tanggal, Kabupaten...)"
+                className="w-full bg-slate-100 border border-slate-200 text-xs font-medium pl-9 pr-8 py-2 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-slate-900 transition-all"
+              />
+              {searchFilter && (
+                <button
+                  onClick={() => setSearchFilter('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+
+            {/* Select Element */}
             <select
               value={selectedActivityId}
               onChange={(e) => {
-                const act = activities.find(a => a.id === e.target.value);
-                if (act) onSelectActivityForAbsen(act);
+                const actId = e.target.value;
+                setSelectedActivityId(actId);
+                const act = activities.find(a => a.id === actId);
+                if (act) {
+                  setCustomTitle(act.namaGiat);
+                  if (onSelectActivityForAbsen) onSelectActivityForAbsen(act);
+                }
               }}
               className="w-full bg-slate-50 border border-slate-200 text-xs font-semibold p-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-slate-900 transition-all"
             >
-              {activities.map(act => (
-                <option key={act.id} value={act.id}>
-                  [{act.id}] {act.namaGiat} ({act.tanggal})
-                </option>
-              ))}
+              {filteredActivitiesList.length === 0 ? (
+                <option value="">Tidak ada kegiatan yang cocok dengan pencarian "{searchFilter}"</option>
+              ) : (
+                filteredActivitiesList.map(act => (
+                  <option key={act.id} value={act.id}>
+                    [{act.id}] {act.namaGiat} ({act.tanggal})
+                  </option>
+                ))
+              )}
             </select>
           </div>
 
