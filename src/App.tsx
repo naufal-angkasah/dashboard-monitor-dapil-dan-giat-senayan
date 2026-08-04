@@ -528,9 +528,10 @@ export default function App() {
 
           {activeTab === 'senayan_eby' && (
             <EbyConnectView
-              ebyPrograms={ebyPrograms}
-              attendanceRecords={attendanceRecords}
-              activities={activities}
+              programs={ebyPrograms}
+              globalSearchQuery={senayanFilter.searchQuery}
+              onGlobalSearchChange={(q) => setSenayanFilter(prev => ({ ...prev, searchQuery: q }))}
+              userRole={senayanUserRole}
             />
           )}
 
@@ -539,6 +540,7 @@ export default function App() {
               attendanceRecords={attendanceRecords}
               activities={activities}
               userRole={senayanUserRole}
+              onOpenAbsenGenerator={() => setIsAbsenGeneratorOpen(true)}
               onOpenFormInputGiat={() => setIsFormInputGiatOpen(true)}
             />
           )}
@@ -616,8 +618,7 @@ export default function App() {
         <DetailModal
           activity={selectedSenayanActivity}
           onClose={() => setSelectedSenayanActivity(null)}
-          onUpdate={handleUpdateActivity}
-          userRole={senayanUserRole}
+          onUpdateActivity={handleUpdateActivity}
         />
       )}
       {isFormInputGiatOpen && role === 'Admin' && (
@@ -649,12 +650,15 @@ export default function App() {
         isOpen={isAbsenGeneratorOpen}
         onClose={() => setIsAbsenGeneratorOpen(false)}
         activities={activities}
+        onOpenPublicAbsen={(activityId) => {
+          window.open(`${window.location.origin}${window.location.pathname}?absen=${activityId}`, '_blank');
+        }}
       />
       <GoogleSheetConfigModal
         isOpen={isSheetConfigOpen}
         onClose={() => setIsSheetConfigOpen(false)}
         config={sheetConfig}
-        onSave={(cfg) => setSheetConfig(cfg)}
+        onSaveConfig={(cfg) => setSheetConfig(cfg)}
       />
       <DeploymentGuideModal
         isOpen={isDeploymentGuideOpen}
@@ -663,7 +667,7 @@ export default function App() {
       <GoogleFormModal
         isOpen={isGoogleFormOpen}
         onClose={() => setIsGoogleFormOpen(false)}
-        activities={activities}
+        onSubmitNewActivity={handleAddNewActivity}
       />
     </div>
   );
